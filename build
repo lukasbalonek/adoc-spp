@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# build package path
+pkg_src_path=package
+
+# Set package name
+PKG_NAME=adoc-spp
+
+# executable containing VERSION variable path is:
+target_exec=package/usr/local/bin/adoc-spp
+
+# load variable from executable
+eval $(grep '^VERSION=[[:digit:]]' ${target_exec})
+
+# set suite by running system version codename
+SUITE=$(grep -Po 'VERSION_CODENAME=\K.*' /etc/os-release)
+
+# set arch by dpkg
+ARCH=$(dpkg --print-architecture)
+
+# Create control file
+mkdir -p ${pkg_src_path}/DEBIAN
+cat > ${pkg_src_path}/DEBIAN/control << EOL
+Package: ${PKG_NAME}
+Version: ${VERSION}
+Architecture: ${ARCH}
+Suite: ${SUITE}
+Maintainer: FIT CTU, ICT department, mirror administrator <mirror@fit.cvut.cz>
+Installed-Size: $(du -ks ${pkg_src_path} | cut -f1)
+Section: tools, devel, web
+Depends: bash, asciidoctor, rsync
+Description: adoc-spp is a simple static page generator using asciidoctor and tocify.js. Run "adoc-spp --help" for usage info.
+EOL
+
+# create DEBIAN/md5sums file
+find ${pkg_src_path} -type f -not -path *DEBIAN* -exec md5sum {} \; > ${pkg_src_path}/DEBIAN/md5sums
+sed -i "s@${pkg_src_path}@@g" ${pkg_src_path}/DEBIAN/md5sums
+
+dest_pkg_name=${PKG_NAME}-${VERSION}-${SUITE}_${ARCH}.deb
+dpkg-deb --build ${pkg_src_path} ${dest_pkg_name}
+
+# remove tmp files
+rm -rf ${pkg_src_path}/DEBIAN
+
+echo "Done creating ${dest_pkg_name}"

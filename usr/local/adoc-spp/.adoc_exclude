@@ -1,0 +1,8 @@
+public
+docinfo.html
+.adoc_exclude
+.git
+.editorconfig
+.gitignore
+.gitattributes
+.gitmodules

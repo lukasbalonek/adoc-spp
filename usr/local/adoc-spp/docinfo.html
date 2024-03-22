@@ -1,0 +1,226 @@
+<!-- Generate a nice TOC
+Precisely stolen from: https://stackoverflow.com/questions/34481638/how-to-use-tocify-with-asciidoctor-for-a-dynamic-toc
+More info for tocify: http://gregfranko.com/docs/jquery.tocify.html -->
+<script src="scripts/jquery-1.11.3.min.js"></script>
+<script src="scripts/jquery-ui.min.js"></script>
+<script src="scripts/jquery.tocify.min.js"></script>
+<!-- We do not need the tocify CSS because the asciidoc CSS already provides most of what we neeed -->
+
+<style>
+:root {
+
+    --default-font: "Arial";
+    --default-body-text-size: 14px;
+
+    --color-ctu-blue: rgb(0, 122, 194);
+    --color-ctu-blue-bg: rgb(204, 229, 243);
+
+    --block-background: rgba(0,0,0,0.08);
+    --block-image-background: rgba(0,0,0,0.1);
+
+    --admonition-note-bg: rgba(0,100,255,0.15);
+    --admonition-note-bordercol: var(--color-ctu-blue);
+    
+    --admonition-tip-bg: rgba(250,250,210,1);
+    --admonition-tip-bordercol: black;
+
+    --admonition-important-bg: rgba(250,250,80,0.8);
+    --admonition-important-bordercol: black;
+    
+    --admonition-caution-bg: rgba(250,0,0,0.2);
+    --admonition-caution-bordercol: black;
+
+    --admonition-warning-bg: rgba(250,0,0,0.4);
+    --admonition-warning-bordercol: black;
+
+}
+
+:not(pre):not([class^="L"]) > code {
+      background: var(--block-background);
+      font-size: var(--default-body-text-size);
+      font-style: italic !important;
+}
+
+.admonitionblock td.icon .icon-note::before,.admonitionblock td.icon .icon-important::before, .admonitionblock td.icon .icon-caution::before, .admonitionblock td.icon .icon-warning::before { color: black; }
+.admonitionblock { border-left: 6px solid black; }
+.admonitionblock.note { background-color: var(--admonition-note-bg); }
+.admonitionblock.tip  { background-color: var(--admonition-tip-bg); }
+.admonitionblock.important { background-color: var(--admonition-important-bg); }
+.admonitionblock.caution { background-color: var(--admonition-caution-bg); }
+.admonitionblock.warning { background-color: var(--admonition-warning-bg); }
+
+.admonitionblock td.icon .icon-tip::before {
+      color: black;
+}
+
+.literalblock pre, .listingblock > .content > pre:not(.highlight), .listingblock > .content > pre[class="highlight"], .listingblock > .content > pre[class^="highlight "]{
+    background-color: lightgoldenrodyellow;
+    border-left: 5px solid black;
+    border-bottom: 0.5px solid black;
+    border-right: 0.5px solid black;
+    border-top: 0.5px solid black;
+}
+
+body {
+    background-color: white;
+    text-align: left;
+    font-size: var(--default-body-text-size);
+    font-family: var(--default-font);
+}
+
+p {
+    font-size: var(--default-body-text-size);
+    color: black;
+}
+
+.quoteblock blockquote, .quoteblock p {
+  font-size: var(--default-body-text-size);
+  line-height: 2;
+}
+
+
+#author.author { 
+	color: gray; 
+	font-style: italic;
+}
+
+#content,#header {
+    max-width: none;
+    padding-left: 25%;
+    padding-right: 25%;
+    z-index: 1;
+}
+
+#footer {
+    padding-left: 3%;
+    background-color: gray;
+}
+
+code {
+    font-family: "Consolas";
+}
+
+#toc.toc2,#toc2.toc-left {
+    padding-top: 2%;
+    color: var(--color-ctu-blue);
+    background-color: var(--color-ctu-blue-bg);
+    font-size: 16px;
+    font-family: var(--default-font);
+    border-right: 1px solid rgba(0,0,0,0.2);
+}
+
+#toc.toc2 #toctitle{
+    font-size: 14px;
+    color: gray;
+    font-weight: bold;
+}
+
+.tocify-header {
+    font-size: 100%;
+
+}
+
+.tocify-subheader {
+    font-size: 90%;
+}
+
+.tocify-focus,.tocify-focus > a {
+    font-weight: bold;
+    font-size: 105%;
+    color: var(--color-ctu-blue);
+}
+
+#header>h1:first-child,h2,h3,h4,h5 {
+    color: rgb(70,70,70);
+    font-weight: bold;
+    font-family: "Arial";
+}
+
+h1 {
+    font-size: 34px;   
+}
+
+h2 {
+    font-size: 30px;
+}
+
+h3 {
+    font-size: 26px;
+}
+
+h4 {
+    font-size: 22px;
+}
+
+h5 {
+    font-size: 18px;
+}
+
+.ctu-bar {
+    border-top: 3px solid var(--color-ctu-blue);
+    padding-top: 0px;
+    z-index: 2;
+    position: fixed;
+    top:0;
+    left:0;
+    right:0
+}
+
+
+</style>
+
+<div class="ctu-bar">
+<!-- that trucking blue bar at the top*/ -->
+</div>
+
+<script type="text/javascript">
+    $(function () {
+
+        // Add a new container for the tocify toc into the existing toc so we can re-use its
+        // styling
+
+        $("#toc").append("<div id='generated-toc'></div>");
+        $("#generated-toc").tocify({
+            
+	    extendPage: true,
+            context: "#content",
+            highlightOnScroll: true,
+            hideEffect: "slideUp",
+	    hideEffectSpeed: "slow",
+	    highlightOnScroll: true,
+	    showAndHideOnScroll: true,
+            
+	    // Use the IDs that asciidoc already provides so that TOC links and intra-document
+            // links are the same. Anything else might confuse users when they create bookmarks.
+            hashGenerator: function(text, element) {
+                return $(element).attr("id");
+            },
+
+            // Smooth scrolling doesn't work properly if we use the asciidoc IDs
+            smoothScroll: false,
+
+            // Set to 'none' to use the tocify classes
+            theme: "none",
+
+            // Handle book (may contain h1) and article (only h2 deeper)
+            selectors: $( "#content" ).has( "h1" ).size() > 0 ? "h1,h2,h3,h4,h5" : "h2,h3,h4,h5",
+            ignoreSelector: ".discrete"
+        });
+
+        // Switch between static asciidoc toc and dynamic tocify toc based on browser size
+        // This is set to match the media selectors in the asciidoc CSS
+        // Without this, we keep the dynamic toc even if it is moved from the side to preamble
+        // position which will cause odd scrolling behavior
+        var handleTocOnResize = function() {
+                $("#generated-toc").show();
+                $(".sectlevel0").hide();
+                $(".sectlevel1").hide();
+            }
+        
+
+        $(window).resize(handleTocOnResize);
+        handleTocOnResize();
+    });
+
+
+</script>

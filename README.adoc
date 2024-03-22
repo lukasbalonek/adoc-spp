@@ -1,0 +1,45 @@
+== Asciidoctor simple page generator
+
+* This project generates html website from .adoc files.
+* Target websites will have collapsable toc on the left side and CTU colors.
+
+
+=== Install
+
+* Copy files at `usr` to your system.
+
+[NOTE]
+adoc-spp/usr
+└── local
+    ├── adoc-spp
+    │ ├── adoc-spp.bash
+    │ ├── docinfo.html
+    │ └── scripts
+    │   ├── jquery-1.11.3.min.js
+    │   ├── jquery.tocify.min.js
+    │   └── jquery-ui.min.js
+    └── bin
+        └── adoc-spp
+		
+=== Usage
+
+* Run: `adoc-spp <destination dir>` like `adoc-spp public` from project root directory.
++
+NOTE: If you want to exclude some files, create file `.adoc_exclude` containing paths to exclude for rsync (min. `<destination dir>` => `public`), otherwise *default .adoc_exclude* will be used. +
+
+* Script will:
+** Copy dir `media` (if present) to `<destination dir>` (like public)
+** Set `favicon` to `media/favicon.png`
+** Copy `docinfo.html` styling into `<destination dir>` +
+** Mirror `current dir` to `destination dir` without files specified in `.adoc_exclude`
+and convert `.adoc` files to `html's`
+** set these three variables (for usage in images/icons)
++
+[source,adoc]
+----
+l_icon="60,60"
+m_icon="30,30"
+s_icon="20,20"
+----
+
+
