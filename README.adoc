@@ -6,21 +6,8 @@
 
 === Install
 
-* Copy files at `usr` to your system.
+* Copy files from `usr` to your system.
 
-[NOTE]
-adoc-spp/usr
-└── local
-    ├── adoc-spp
-    │ ├── adoc-spp.bash
-    │ ├── docinfo.html
-    │ └── scripts
-    │   ├── jquery-1.11.3.min.js
-    │   ├── jquery.tocify.min.js
-    │   └── jquery-ui.min.js
-    └── bin
-        └── adoc-spp
-		
 === Usage
 
 * Run: `adoc-spp <destination dir>` like `adoc-spp public` from project root directory.
